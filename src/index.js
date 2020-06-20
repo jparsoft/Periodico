@@ -1,23 +1,14 @@
 const path = require('path');
 const express = require('express');
-const cheerio = require('cheerio');
-const fs = require('fs');
-const request = require('request-promise');
 const app = express();
 const morgan = require('morgan');
-//const mongoose = require('mongoose');
-const PORT = 3200;
-const environment = require('./environment');
-// db conecction 
-/*
-mongoose.connect(environment.dbConexion)
-    .then((s)=>console.info('db online'))
-    .catch(err => console.error(err));
-*/
+const environment= require('../environment');
+
+
 // Import routes
 //const routes = require('./routes/index');
 
-// Settings
+// Settingss
 app.set('port', process.env.PORT || environment.port); /* configure port*/
 // app.set('routes', path.join(__dirname, 'routes'));
 
@@ -36,8 +27,3 @@ app.use(express.urlencoded({ extended: false }));/*server only plain text */
 // Routes
 //app.use(routes);
 
-app.get('/', (req, res) => {
-    res.json({
-        text: 'Hola mundo'
-    });
-})

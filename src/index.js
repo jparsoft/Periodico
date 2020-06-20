@@ -6,7 +6,7 @@ const environment= require('../environment');
 
 
 // Import routes
-//const routes = require('./routes/index');
+const routes = require('./routes/index');
 
 // Settingss
 app.set('port', process.env.PORT || environment.port); /* configure port*/
@@ -25,5 +25,5 @@ app.use(express.urlencoded({ extended: false }));/*server only plain text */
 
 
 // Routes
-//app.use(routes);
+app.use(routes);
 

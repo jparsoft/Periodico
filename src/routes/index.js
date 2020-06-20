@@ -1,16 +1,25 @@
-const path = require('path');
-const express = require('express');
+//Necesario para exportar router
+const { Router } = require('express');
+const router = Router();
+//////////////////////////////////
+// Necesarios para web scrapping
 const cheerio = require('cheerio');
 const fs = require('fs');
 const request = require('request-promise');
-const app = express();
-
+//////////////////////////////////
 //const environment = require('./environment');
 
-app.get('/', (req, res) => {
+router.get('/', (req, res) => {
     res.json({
         text: 'Hola mundo'
     });
 });
 
-module.exports;
+router.get('/test', (req, res) => {
+    res.json({
+        text: 'Test'
+    });
+});
+
+// exportar modulo
+module.exports = router;

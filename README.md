@@ -6,3 +6,6 @@ npm i
 
 # start nodemon
 npm run dev
+
+# comilla invertida ``
+alt+96

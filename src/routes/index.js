@@ -100,5 +100,7 @@ router.get('/test', (req, res) => {
     });
 });
 
+//Crear pdf
+generarPdf();
 // exportar modulo
 module.exports = router;

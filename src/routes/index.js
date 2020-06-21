@@ -7,28 +7,47 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const request = require('request-promise');
 //////////////////////////////////
+
+// pdf kit
+const PDF = require('pdfkit');
+const doc = new PDF();
+
+//////////////////////////////////
+
+const ImagesToPDF = require('images-pdf');
+const { throws } = require('assert');
+
+
 //const environment = require('..img/');
 let fecha = new Date();
 let anio = fecha.getFullYear();
-let mes = formatearNumero(fecha.getMonth());
+let month = fecha.getMonth();
+console.log(parseInt(month) + 1);
+let mes = formatearNumero(parseInt(month) + 1);
 let dia = formatearNumero(fecha.getDate());
 
 let urlLider = `https://www.lidersanantonio.cl/impresa/${anio}/${mes}/${dia}/papel/`
 let urlImagenes = '';
 
 async function extraerUrl() {
-    const $ = await request({
-        uri: urlLider,
-        transform: body => cheerio.load(body)
-    });
-    const data = $('.no-gutters .page a').children();
-    urlImagenes = String(data[0].attribs.src);
+    try {
+        const $ = await request({
+            uri: urlLider,
+            transform: body => cheerio.load(body)
+        });
+        const data = $('.no-gutters .page a').children();
+        urlImagenes = String(data[0].attribs.src);
+    } catch (e) {
+        console.log('no se puedo obtener url');
+        throws();
+    }
+
 
 
 }
 function formatearNumero(numero) {
     let formateado;
-    if (numero < 10) {
+    if (parseInt(numero) < 10) {
         formateado = `0${String(numero)}`;
     } else {
         formateado = String(numero);
@@ -38,23 +57,40 @@ function formatearNumero(numero) {
 
 async function obtenerImagenes() {
     await extraerUrl();
-    for (let index = 1; index < 21; index++) {
-        let numpag = formatearNumero(index);
-        try {
-            request(urlImagenes.replace(`pag_01`, `pag_${numpag}`)).pipe(fs.createWriteStream(`./src/img/${numpag}.jpg`));
-        } catch (e) {
-            console.log(e);
+    return promise = await new Promise(function (resolve, reject) {
+        for (let index = 1; index < 21; index++) {
+            let numpag = formatearNumero(index);
+            try {
+                request(urlImagenes.replace(`pag_01`, `pag_${numpag}`)).pipe(fs.createWriteStream(`./src/img/${numpag}.jpg`));
+                console.log(`descargando imagen ${numpag}`);
+            } catch (e) {
+                reject();
+                console.log(e);
+            }
         }
+        resolve();
+    });
+}
 
 
+async function generarPdf() {
+    await obtenerImagenes();
+    try {
+        setTimeout(() => {
+            console.log('generando pdf');
+            new ImagesToPDF.ImagesToPDF().convertFolderToPDF('./src/img/', `./src/pdf/ellidersanantonio${anio}${mes}${dia}.pdf`);
+        }, 3000);
+
+    } catch (e) {
+        console.error(e);
     }
 
 }
 
 router.get('/', async (req, res) => {
-    await obtenerImagenes();
+    await generarPdf();
     res.json({
-        text: `url :${urlImagenes} fecha:${anio}/${mes}/${dia}`
+        text: `url :${urlLider} fecha:${anio}/${mes}/${dia}`
     });
 });
 

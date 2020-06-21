@@ -26,11 +26,13 @@ console.log(parseInt(month) + 1);
 let mes = formatearNumero(parseInt(month) + 1);
 let dia = formatearNumero(fecha.getDate());
 
-let urlLider = `https://www.lidersanantonio.cl/impresa/${anio}/${mes}/${dia}/papel/`
+
 let urlImagenes = '';
 
 async function extraerUrl() {
+    
     try {
+        let urlLider = `https://www.lidersanantonio.cl/impresa/${anio}/${mes}/${dia}/papel/`
         const $ = await request({
             uri: urlLider,
             transform: body => cheerio.load(body)
@@ -38,8 +40,15 @@ async function extraerUrl() {
         const data = $('.no-gutters .page a').children();
         urlImagenes = String(data[0].attribs.src);
     } catch (e) {
-        console.log('no se puedo obtener url');
-        throws();
+        let urlLider = `https://www.lidersanantonio.cl/impresa/${anio}/${mes}/${dia-1}/papel/`
+        const $ = await request({
+            uri: urlLider,
+            transform: body => cheerio.load(body)
+        });
+        const data = $('.no-gutters .page a').children();
+        urlImagenes = String(data[0].attribs.src);
+        console.log('edicion anterior');
+        
     }
 
 

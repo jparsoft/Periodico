@@ -7,7 +7,7 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const request = require('request-promise');
 //////////////////////////////////
-//const environment = require('./environment');
+//const environment = require('..img/');
 let fecha = new Date();
 let anio = fecha.getFullYear();
 let mes = formatearNumero(fecha.getMonth());
@@ -23,25 +23,36 @@ async function extraerUrl() {
     });
     const data = $('.no-gutters .page a').children();
     urlImagenes = String(data[0].attribs.src);
-    console.log(data[0].attribs.src);
+
 
 }
 function formatearNumero(numero) {
     let formateado;
-    if (numero < 10) {     
+    if (numero < 10) {
         formateado = `0${String(numero)}`;
-    } else {    
+    } else {
         formateado = String(numero);
     }
     return formateado;
 }
 
-async function obtenerImagenes(param) {
+async function obtenerImagenes() {
+    await extraerUrl();
+    for (let index = 1; index < 21; index++) {
+        let numpag = formatearNumero(index);
+        try {
+            request(urlImagenes.replace(`pag_01`, `pag_${numpag}`)).pipe(fs.createWriteStream(`./src/img/${numpag}.jpg`));
+        } catch (e) {
+            console.log(e);
+        }
 
-  }
 
-router.get('/', async(req, res) => {
-   await extraerUrl();
+    }
+
+}
+
+router.get('/', async (req, res) => {
+    await obtenerImagenes();
     res.json({
         text: `url :${urlImagenes} fecha:${anio}/${mes}/${dia}`
     });
